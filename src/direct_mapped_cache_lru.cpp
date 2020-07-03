@@ -22,20 +22,38 @@ int read_system1(unsigned int address) {
   }
 
   cycles += 2;  // read
-
   cycles += 1;  // send word
 
   return cycles;
 }
 
-int run_system1(unsigned int baseA, unsigned int baseB, unsigned int baseC,
-                int m, int n, int p) {
-  int cycles = 0;
-  for (int i = 0; i < m; ++i) {
-    for (int j = 0; j < n; ++j) {
+int read_system2(unsigned int address) {
+  int cycles = 1;
+  cache_content unused;
+  bool read2 = sys2_1.read(address, unused);
+  if (!read2) {
+    cycles += 1 + 100 + 1 + 2;  // read mem and write cache
+  }
+  cycles += 2;  // read
+  cycles += 1;  // send word
+
+  return cycles;
+}
+
+int read_system3(unsigned int address) {
+  int cycles = 1;
+  cache_content unused1, unused2;
+  bool read1 = sys3_1.read(address, unused1);
+  bool read2 = sys3_2.read(address, unused2);
+  if (!read1) {
+    
+    cycles += 4 * (1 + 10 + 1 + 1);  // read mem and write cache
+    if (!read2) {
+      cycles += 32 * (1 + 100 + 1 + 10);
     }
   }
-
+  cycles += 1;  // read
+  cycles += 1;  // send word
   return cycles;
 }
 
@@ -84,15 +102,24 @@ int main(int argc, char **argv) {
     }
   }
 
-  int cycles_sys1 = 0;
+  int cycles_sys1 = 0, cycles_sys2 = 0, cycles_sys3 = 0;
 
   for (int i = 0; i < m; ++i) {
     for (int j = 0; j < p; ++j) {
       for (int k = 0; k < n; ++k) {
         matrixC[i][j] += matrixA[i][k] * matrixB[k][j];
-        cycles_sys1 += read_system1(baseC + 4*(i*p+j)) +
-                       read_system1(baseA + 4*(i*n+k)) +
-                       read_system1(baseB + 4*(k*p+j));
+        cycles_sys1 += read_system1(baseC + 4 * (i * p + j)) +
+                       read_system1(baseA + 4 * (i * n + k)) +
+                       read_system1(baseB + 4 * (k * p + j)) +
+                       read_system1(baseC + 4 * (i * p + j));
+        cycles_sys2 += read_system2(baseC + 4 * (i * p + j)) +
+                       read_system2(baseA + 4 * (i * n + k)) +
+                       read_system2(baseB + 4 * (k * p + j)) +
+                       read_system2(baseC + 4 * (i * p + j));
+        cycles_sys3 += read_system3(baseC + 4 * (i * p + j)) +
+                       read_system3(baseA + 4 * (i * n + k)) +
+                       read_system3(baseB + 4 * (k * p + j)) +
+                       read_system3(baseC + 4 * (i * p + j));
       };
     }
   }
@@ -104,7 +131,7 @@ int main(int argc, char **argv) {
     cout << endl;
   }
 
-  cout << cycles_sys1 << endl;
+  cout << cycles_sys1 << " " << cycles_sys2 << " " << cycles_sys3 << endl;
 
   fs.close();
   output.close();
