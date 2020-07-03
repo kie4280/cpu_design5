@@ -40,36 +40,32 @@ bool Cache::read(unsigned int x, cache_content &swapout) {
   int least_index = 0;
   bool hit = false;
 
-  for (int b = 0; b < n_way; ++b) {
+  for (int b = 0; b <= n_way; ++b) {
     if (b < n_way && cache[index][b].v && cache[index][b].tag == tag) {
       cache[index][b].v = true;  // hit
       cache[index][b].count = 0;
       hit = true;
       break;
+    } else if (b == n_way) {
+      swapout = cache_content(cache[index][least_index]);
+      for (int j = 0; j < n_way; ++j) {
+        if (cache[index][j].v == false) {
+          least_index = j;
+          break;
+        }
+        if (least_used < cache[index][j].count) {
+          least_used = cache[index][j].count;
+          least_index = j;
+        }
+      }
+
+      cache[index][least_index].count = 0;
+      cache[index][least_index].v = true;
+      cache[index][least_index].tag = tag;
+      cache[index][least_index].dirty = false;
     }
   }
-
-  for (int b = 0; b < n_way; ++b) {
-    cache[index][b].count++;
-  }
-  swapout = cache_content(cache[index][least_index]);
-
-  for (int j = 0; j < n_way; ++j) {
-    if (cache[index][j].v == false) {
-      least_index = j;
-      break;
-    }
-    if (least_used < cache[index][j].count) {
-      least_used = cache[index][j].count;
-      least_index = j;
-    }
-
-    cache[index][least_index].count = 0;
-    cache[index][least_index].v = true;
-    cache[index][least_index].tag = tag;
-    cache[index][least_index].dirty = false;
-  }
-
+  return hit;
   // cout <<dec<< miss << " " << accesses << endl;
 }
 
@@ -91,7 +87,7 @@ bool Cache::write(unsigned int x, cache_content &swapout) {
       cache[index][b].count = 0;
       hit = true;
       break;
-    } else {
+    } else if (b == n_way) {
       swapout = cache_content(cache[index][least_index]);
       for (int j = 0; j < n_way; ++j) {
         if (cache[index][j].v == false) {
@@ -102,19 +98,19 @@ bool Cache::write(unsigned int x, cache_content &swapout) {
           least_used = cache[index][j].count;
           least_index = j;
         }
-
-        cache[index][least_index].count = 0;
-        cache[index][least_index].v = true;
-        cache[index][least_index].tag = tag;
-        cache[index][least_index].dirty = true;
       }
+
+      cache[index][least_index].count = 0;
+      cache[index][least_index].v = true;
+      cache[index][least_index].tag = tag;
+      cache[index][least_index].dirty = true;
     }
   }
 
   for (int b = 0; b < n_way; ++b) {
     cache[index][b].count++;
   }
-
+  return hit;
   // cout <<dec<< miss << " " << accesses << endl;
 }
 

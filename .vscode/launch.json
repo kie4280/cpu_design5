@@ -9,7 +9,7 @@
             "type": "cppdbg",
             "request": "launch",
             "program": "${command:cmake.launchTargetPath}",
-            "args": ["${workspaceFolder}/test/a1xb1", "dfgd"],
+            "args": ["${workspaceFolder}/test/a1xb1", "c1"],
             "stopAtEntry": false,
             "cwd": "${workspaceFolder}",
             "environment": [],
