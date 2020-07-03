@@ -2,8 +2,8 @@
 #define CACHE_STORAGE
 
 struct cache_content {
-  bool v, dirty;
-  unsigned int tag;
+  bool v = false, dirty = false;
+  unsigned int tag = 1234;
   unsigned int count = 0;
   // unsigned int	data[16];
 };
@@ -23,9 +23,9 @@ class Cache {
 
   Cache(int cache_size, int block_size, int n_way);
 
-  bool check(unsigned int x);
+  bool read(unsigned int x, cache_content &swapout);
 
-  void load(unsigned int x);
+  bool write(unsigned int x, cache_content &swapout);
 
   ~Cache();
 };
