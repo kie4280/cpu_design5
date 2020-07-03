@@ -67,6 +67,11 @@ build package: phony CMakeFiles/package.util
 # Order-only phony target for cpu_design5
 
 build cmake_object_order_depends_target_cpu_design5: phony
+build CMakeFiles/cpu_design5.dir/src/cache.cpp.o: CXX_COMPILER__cpu_design5 ../src/cache.cpp || cmake_object_order_depends_target_cpu_design5
+  DEP_FILE = CMakeFiles/cpu_design5.dir/src/cache.cpp.o.d
+  FLAGS = -g
+  OBJECT_DIR = CMakeFiles/cpu_design5.dir
+  OBJECT_FILE_DIR = CMakeFiles/cpu_design5.dir/src
 build CMakeFiles/cpu_design5.dir/src/direct_mapped_cache_lru.cpp.o: CXX_COMPILER__cpu_design5 ../src/direct_mapped_cache_lru.cpp || cmake_object_order_depends_target_cpu_design5
   DEP_FILE = CMakeFiles/cpu_design5.dir/src/direct_mapped_cache_lru.cpp.o.d
   FLAGS = -g
@@ -80,7 +85,7 @@ build CMakeFiles/cpu_design5.dir/src/direct_mapped_cache_lru.cpp.o: CXX_COMPILER
 #############################################
 # Link the executable cpu_design5
 
-build cpu_design5: CXX_EXECUTABLE_LINKER__cpu_design5 CMakeFiles/cpu_design5.dir/src/direct_mapped_cache_lru.cpp.o
+build cpu_design5: CXX_EXECUTABLE_LINKER__cpu_design5 CMakeFiles/cpu_design5.dir/src/cache.cpp.o CMakeFiles/cpu_design5.dir/src/direct_mapped_cache_lru.cpp.o
   FLAGS = -g
   LINK_FLAGS = -rdynamic
   OBJECT_DIR = CMakeFiles/cpu_design5.dir
