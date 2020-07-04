@@ -132,12 +132,12 @@ int main(int argc, char **argv) {
 
   for (int i = 0; i < m; ++i) {
     for (int j = 0; j < p; ++j) {
-      cout << matrixC[i][j] << " ";
+      output << matrixC[i][j] << " ";
     }
-    cout << endl;
+    output << endl;
   }
 
-  cout << exec_cycles << " " << cycles_sys1 << " " << cycles_sys2 << " "
+  output << exec_cycles << " " << cycles_sys1 << " " << cycles_sys2 << " "
        << cycles_sys3 << endl;
 
   fs.close();
