@@ -46,7 +46,6 @@ int read_system3(unsigned int address) {
   bool read1 = sys3_1.read(address, unused1);
   bool read2 = sys3_2.read(address, unused2);
   if (!read1) {
-    
     cycles += 4 * (1 + 10 + 1 + 1);  // read mem and write cache
     if (!read2) {
       cycles += 32 * (1 + 100 + 1 + 10);
@@ -103,6 +102,7 @@ int main(int argc, char **argv) {
   }
 
   int cycles_sys1 = 0, cycles_sys2 = 0, cycles_sys3 = 0;
+  int exec_cycles = 2;
 
   for (int i = 0; i < m; ++i) {
     for (int j = 0; j < p; ++j) {
@@ -120,9 +120,15 @@ int main(int argc, char **argv) {
                        read_system3(baseA + 4 * (i * n + k)) +
                        read_system3(baseB + 4 * (k * p + j)) +
                        read_system3(baseC + 4 * (i * p + j));
-      };
+        exec_cycles += 22;
+        if (k == n - 1) exec_cycles += 2;
+      }
+      exec_cycles += 5;
+      if (j == p - 1) exec_cycles += 2;
     }
+    exec_cycles += 5;
   }
+  exec_cycles += 3; // plus one after exit
 
   for (int i = 0; i < m; ++i) {
     for (int j = 0; j < p; ++j) {
@@ -131,7 +137,8 @@ int main(int argc, char **argv) {
     cout << endl;
   }
 
-  cout << cycles_sys1 << " " << cycles_sys2 << " " << cycles_sys3 << endl;
+  cout << exec_cycles << " " << cycles_sys1 << " " << cycles_sys2 << " "
+       << cycles_sys3 << endl;
 
   fs.close();
   output.close();
