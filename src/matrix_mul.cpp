@@ -13,6 +13,8 @@ Cache sys1_1(512, 32, 8);
 Cache sys2_1(512, 32, 8);
 Cache sys3_1(128, 16, 8), sys3_2(4096, 128, 8);
 
+int L1_miss = 0, L2_miss = 0;
+
 int read_system1(unsigned int address) {
   int cycles = 1;  // send address
   cache_content unused;
@@ -44,11 +46,14 @@ int read_system3(unsigned int address) {
   int cycles = 1;
   cache_content unused1, unused2;
   bool read1 = sys3_1.read(address, unused1);
-  bool read2 = sys3_2.read(address, unused2);
+  
   if (!read1) {
+    bool read2 = sys3_2.read(address, unused2);
     cycles += 4 * (1 + 10 + 1 + 1);  // read mem and write cache
+    L1_miss++;
     if (!read2) {
       cycles += 32 * (1 + 100 + 1 + 10);
+      L2_miss++;
     }
   }
   cycles += 1;  // read L1
@@ -128,7 +133,7 @@ int main(int argc, char **argv) {
     }
     exec_cycles += 5;
   }
-  exec_cycles += 3; // plus one after exit
+  exec_cycles += 3;  // plus one after exit
 
   for (int i = 0; i < m; ++i) {
     for (int j = 0; j < p; ++j) {
@@ -138,8 +143,9 @@ int main(int argc, char **argv) {
   }
 
   output << exec_cycles << " " << cycles_sys1 << " " << cycles_sys2 << " "
-       << cycles_sys3 << endl;
+         << cycles_sys3 << endl;
 
+  // cout << L1_miss << " " << L2_miss << endl;
   fs.close();
   output.close();
 
