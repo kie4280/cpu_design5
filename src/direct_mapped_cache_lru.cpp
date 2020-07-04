@@ -52,7 +52,7 @@ int read_system3(unsigned int address) {
       cycles += 32 * (1 + 100 + 1 + 10);
     }
   }
-  cycles += 1;  // read
+  cycles += 1;  // read L1
   cycles += 1;  // send word
   return cycles;
 }

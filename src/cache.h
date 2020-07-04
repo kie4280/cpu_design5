@@ -1,9 +1,11 @@
+// Author: 0710012 何權祐, 0710018 張宸愷
+
 #ifndef CACHE_STORAGE
 #define CACHE_STORAGE
 
 struct cache_content {
   bool v = false, dirty = false;
-  unsigned int tag = 1234;
+  unsigned int tag = 0;
   unsigned int count = 0;
   // unsigned int	data[16];
 };

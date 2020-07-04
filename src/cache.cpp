@@ -1,3 +1,5 @@
+// Author: 0710012 何權祐, 0710018 張宸愷
+
 #include "cache.h"
 
 #include <cmath>
@@ -29,12 +31,9 @@ Cache::Cache(int cache_size, int block_size, int n_way) {
 }
 
 bool Cache::read(unsigned int x, cache_content &swapout) {
-  // cout << hex << x << " ";
   unsigned int tag, index;
   index = (x >> (offset_bit)) & ((line - 1) >> set_bit);
   tag = x >> (index_bit + offset_bit - set_bit);
-
-  // unsigned int set_index = index >> set_bit;
 
   unsigned int least_used = 0;
   int least_index = 0;
@@ -47,7 +46,6 @@ bool Cache::read(unsigned int x, cache_content &swapout) {
       hit = true;
       break;
     } else if (b == n_way) {
-      swapout = cache_content(cache[index][least_index]);
       for (int j = 0; j < n_way; ++j) {
         if (cache[index][j].v == false) {
           least_index = j;
@@ -58,24 +56,26 @@ bool Cache::read(unsigned int x, cache_content &swapout) {
           least_index = j;
         }
       }
-
+      swapout = cache_content(cache[index][least_index]);
       cache[index][least_index].count = 0;
       cache[index][least_index].v = true;
       cache[index][least_index].tag = tag;
       cache[index][least_index].dirty = false;
     }
   }
+
+  for (int a = 0; a < n_way; ++a) {
+    cache[index][a].count++;
+  }
+
   return hit;
-  // cout <<dec<< miss << " " << accesses << endl;
 }
 
-bool Cache::write(unsigned int x, cache_content &swapout) {
-  // cout << hex << x << " ";
+bool Cache::write(unsigned int x, cache_content &swapout) {  // may be deleted
+
   unsigned int tag, index;
   index = (x >> (offset_bit)) & ((line - 1) >> set_bit);
   tag = x >> (index_bit + offset_bit - set_bit);
-
-  // unsigned int set_index = index >> set_bit;
 
   unsigned int least_used = 0;
   int least_index = 0;
@@ -88,7 +88,6 @@ bool Cache::write(unsigned int x, cache_content &swapout) {
       hit = true;
       break;
     } else if (b == n_way) {
-      swapout = cache_content(cache[index][least_index]);
       for (int j = 0; j < n_way; ++j) {
         if (cache[index][j].v == false) {
           least_index = j;
@@ -99,7 +98,7 @@ bool Cache::write(unsigned int x, cache_content &swapout) {
           least_index = j;
         }
       }
-
+      swapout = cache_content(cache[index][least_index]);
       cache[index][least_index].count = 0;
       cache[index][least_index].v = true;
       cache[index][least_index].tag = tag;
@@ -107,11 +106,11 @@ bool Cache::write(unsigned int x, cache_content &swapout) {
     }
   }
 
-  for (int b = 0; b < n_way; ++b) {
-    cache[index][b].count++;
+  for (int a = 0; a < n_way; ++a) {
+    cache[index][a].count++;
   }
+
   return hit;
-  // cout <<dec<< miss << " " << accesses << endl;
 }
 
 Cache::~Cache() {
